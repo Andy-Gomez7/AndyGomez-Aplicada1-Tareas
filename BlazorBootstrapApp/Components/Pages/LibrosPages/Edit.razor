@@ -1,0 +1,89 @@
+@page "/Libro/Edit/{LibroId:int}"
+@using BlazorBootstrapApp.Services
+@using BlazorBootstrapApp.Models
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject LibroService libroservice
+@inject NavigationManager navegacion
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Crear Libro</PageTitle>
+
+@if(!string.IsNullOrEmpty(Mensaje)){
+    <div class="alert alert-danger">@Mensaje</div>
+}
+
+<EditForm Model="Libro" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator/>
+
+    <div class="containter">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h5 class="card-title">Crear Libro</h5>
+            </div>
+        <div class="card-body">
+
+        @*LibroId*@
+        <div class="mb-3">
+            <label class="form-label"><strong>LibroId</strong></label>
+            <InputNumber class="form-control" @bind-Value="Libro.LibroId" readonly></InputNumber>
+        </div>
+        @*Titulo*@
+        <div class="mb-3">
+            <label class="form-label"><strong>Titulo</strong></label>
+            <InputText class="form-control" @bind-Value="Libro.Titulo"></InputText>
+        </div>
+        @*Autor*@
+        <div class="mb-3">
+            <label class="form-label"><strong>Autor</strong></label>
+            <InputText class="form-control" @bind-Value="Libro.Autor"></InputText>
+        </div>
+        @*AnoPublicacion*@
+        <div class="mb-3">
+            <label class="form-label"><strong>AnoPublicacion</strong></label>
+            <InputNumber class="form-control" @bind-Value="Libro.AnoPublicacion"></InputNumber>
+        </div>
+
+        </div>
+
+        @*footer*@
+        <div class="card-footer text-center mt-2">
+            <a href="/Libro/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span>Volver</a>
+            <button type="submit" class="btn btn-primary bi bi-floppy">Modificar</button>
+            <button type="button" class="btn btn-primary bi bi-trash"@onclick="Eliminar">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+</EditForm>
+
+@code{
+    [Parameter]
+    public int LibroId { get; set; }
+    public Libro Libro { get; set; } = new Libro();
+    public string Mensaje { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync(){
+        Libro = await libroservice.Buscar(LibroId);
+    }
+
+    public async Task Modificar(){
+        var modificado = await libroservice.Guardar(Libro);
+        if(modificado){
+            navegacion.NavigateTo("/Libro/Index");
+        }
+        else{
+            Mensaje = "No se pudo modificar";
+        }
+    }
+
+    public async Task Eliminar(){
+        var eliminado = await libroservice.Eliminar(Libro.LibroId);
+        if(eliminado){
+            navegacion.NavigateTo("/Libro/Index");
+        }
+        else{
+            Mensaje = "No se pudo eliminar";
+        }
+    }
+}

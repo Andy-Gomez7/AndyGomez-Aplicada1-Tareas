@@ -1,0 +1,120 @@
+@page "/Libro/Index"
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using BlazorBootstrapApp.Services;
+@using BlazorBootstrapApp.Models; 
+@inject LibroService libroservice;
+@inject NavigationManager navegacion;
+@rendermode InteractiveServer
+
+<PageTitle>Indice de libros</PageTitle>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div "card-header space-between">
+            <h5 class="card-title">Indice Libros</h5>
+            <a href="/Libro/Create" class="btn btn-primary"><span bi bi-plus-square mt-1></span>Buscar</a>
+            </div>
+
+            <div class="card-body">
+
+                @*labels*@
+                <div class="row">
+
+                    @*Filtrar por:*@
+                    <div class="col-3">
+                        <label class="col-form-label"><strong>Filtrar por:</strong></label>
+                    </div>
+
+                    @*ValordeFiltro*@
+                    <div class="col-4">
+                        <label class="col-form-label"><strong>Busqueda Filtro:</strong></label>
+                    </div>
+                </div>
+
+                @*botones y inputs*@
+                <div class="row align-items-center">
+                    @*filtro*@
+                    <div class="col-3">
+                        <InputSelect class="form-select" @bind-value="Filtro">
+                        <option value="" selected disabled>Seleccione </option>
+                        <option value="Titulo">Titulo</option>
+                        <option value="Autor">Autor</option>
+                    </InputSelect>
+
+                     @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                @*Restaurar*@
+                <div class="col-2">
+                    <button type="button" class="btn btn-outline-primary bi bi-arrow-counterclockwise" @onclick="Restablecer"></button>
+                </div>
+
+                <table class="table table-hover">
+                    <thead class="table table-striped text-black">
+                        <tr>
+                            <th>Id</th>
+                            <th>Titulo</th>
+                            <th>Autor</th>
+                            <th>Ano de publicacion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Libro in ListaLibros)
+                        {
+                            <tr>
+                                <td>@Libro.LibroId</td>
+                                <td>@Libro.Titulo</td>
+                                <td>@Libro.Autor</td>
+                                <td>@Libro.AnoPublicacion</td>
+
+                                <td class="text-center">
+                                    <a href="/Libro/Edit/@Libro.LibroId" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+             </div>
+
+                 <div class="card-footer space-between">
+                     <label>Cantidad: @ListaLibros.Count()</label>
+                 </div>
+         </div>
+    </div>
+</div>
+</div>
+
+@code{
+    public List<Libro> ListaLibros { get; set; } = new List<Libro>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    
+    protected override async Task OnInitializedAsync(){
+        ListaLibros = await libroservice.Listar(l => l.LibroId >0);
+    }
+
+    private async Task Buscar(){
+
+        if(ValorFiltro.Trim() != ""){
+
+            if(Filtro == nameof(Libro.Titulo)){
+
+                ListaLibros = await libroservice.Listar(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+        }
+    }
+
+    private async Task Restablecer(){
+        ListaLibros = await libroservice.Listar(l => l.LibroId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+
+}
