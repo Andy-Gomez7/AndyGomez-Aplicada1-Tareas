@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using BlazorBootstrapApp.Context;
 using BlazorBootstrapApp.Models;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.Internal;
 
 public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
 {
