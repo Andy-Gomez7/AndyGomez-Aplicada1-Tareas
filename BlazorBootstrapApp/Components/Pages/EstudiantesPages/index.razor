@@ -1,0 +1,114 @@
+@page "/Estudiante/Index"
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@using BlazorBootstrapApp.Services;
+@using BlazorBootstrapApp.Models; 
+@inject EstudianteService estudiantesService;
+@inject NavigationManager navegacion;
+@rendermode InteractiveServer
+
+<PageTitle>Indice de Estudiantes</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Indice Estudiantes</h5>
+            <a href="/Estudiante/Create" class="btn btn-primary">
+                <span class="bi bi-plus-square mt-1"></span> Nuevo Estudiante
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            @*Labels*@
+            <div class="row">
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por:</strong></label>
+                </div>
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda:</strong></label>
+                </div>
+            </div>
+
+            @*Filtros*@
+            <div class="row align-items-center mb-3">
+                <div class="col-3">
+                    <select class="form-select" @bind="Filtro">
+                        <option value="" disabled>Seleccione</option>
+                        <option value="Nombres">Nombres</option>
+                    </select>
+                </div>
+
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                    </div>
+                </div>
+
+                <div class="col-2">
+                    <button type="button" class="btn btn-outline-primary bi bi-arrow-counterclockwise" @onclick="Restablecer"></button>
+                </div>
+            </div>
+
+            @* Tabla *@
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nombres</th>
+                        <th>Dirección</th>
+                        <th>Email</th>
+                        <th>Fecha de nacimiento</th>
+                        <th class="text-center">Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var estudiante in ListaEstudiantes)
+                    {
+                        <tr>
+                            <td>@estudiante.EstudianteId</td>
+                            <td>@estudiante.Nombres</td>
+                            <td>@estudiante.Direccion</td>
+                            <td>@estudiante.Email</td>
+                            <td>@estudiante.FechaNacimiento.ToString("dd/MM/yyyy")</td>
+                            <td class="text-center">
+                                <a href="/Estudiante/Edit/@estudiante.EstudianteId"
+                                   class="btn btn-outline-primary bi bi-pencil-square"></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            <label>Cantidad: @ListaEstudiantes.Count</label>
+        </div>
+    </div>
+</div>
+
+@code{
+    public List<Estudiante> ListaEstudiantes { get; set; } = new List<Estudiante>();
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+    
+    protected override async Task OnInitializedAsync(){
+        ListaEstudiantes = await estudiantesService.Listar(E => E.EstudianteId >0);
+    }
+
+    private async Task Buscar(){
+
+        if(ValorFiltro.Trim() != ""){
+
+            if(Filtro == nameof(Estudiante.Nombres)){
+
+                ListaEstudiantes = await estudiantesService.Listar(E => E.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+        }
+    }
+
+    private async Task Restablecer(){
+        ListaEstudiantes = await estudiantesService.Listar(E => E.EstudianteId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}
