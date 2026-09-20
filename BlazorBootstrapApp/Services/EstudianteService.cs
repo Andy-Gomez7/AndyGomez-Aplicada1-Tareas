@@ -8,6 +8,18 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
 {
+    public async Task<bool> Guardar(Estudiante estudiante)
+    {
+        if (estudiante.EstudianteId == 0)
+        {
+            return await Insertar(estudiante);
+        }
+        else
+        {
+            return await Modificar(estudiante);
+        }
+    }
+    
     public async Task<bool> Insertar(Estudiante estudiante)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
@@ -25,4 +37,13 @@ public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
 
         return await contexto.SaveChangesAsync() > 0;
     }
+
+    public async Task<Estudiante> Buscar(int estudianteId)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        return await contexto.Estudiantes.FirstOrDefaultAsync(E => E.EstudianteId == estudianteId);
+    }
+
+    
 }
