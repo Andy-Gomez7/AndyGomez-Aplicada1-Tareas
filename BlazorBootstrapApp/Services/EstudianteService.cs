@@ -45,5 +45,24 @@ public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
         return await contexto.Estudiantes.FirstOrDefaultAsync(E => E.EstudianteId == estudianteId);
     }
 
-    
+    public async Task<bool> Existe(string nombre)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        return await contexto.Estudiantes.AnyAsync(E => E.Nombres == nombre);
+    }
+
+   public async Task<bool> Eliminar(int estudianteId)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        return await contexto.Estudiantes.AsNoTracking().Where(E => E.EstudianteId == estudianteId).ExecuteDeleteAsync() > 0;
+    } 
+
+    public async Task<List<Estudiante>> Listar(Expression<Func<Estudiante, bool>> criterio)
+    {
+        await using var contexto = await DbFactory.CreateDbContextAsync();
+
+        return await contexto.Estudiantes.Where(criterio).AsNoTracking().ToListAsync();
+    }
 }
