@@ -6,7 +6,6 @@
 @inject NavigationManager navegacion
 @rendermode InteractiveServer
 
-@*HTML*@
 <PageTitle>Create</PageTitle>
 
 <EditForm Model="estudiante" OnValidSubmit="Guardar">
@@ -24,7 +23,6 @@
                 <div class="mb-3">
                     <label class="col-form-label"><strong>Nombres</strong></label>
                     <InputText class="form-control" @bind-Value="estudiante.Nombres"></InputText>
-                    <label class="form-label"><strong>@Mensaje</strong></label>
                     <ValidationMessage For="(() => estudiante.Nombres)" />
                 </div>
 
@@ -47,6 +45,11 @@
                     <label class="form-label"><strong>FechaNacimiento</strong></label>
                     <InputDate class="form-control" @bind-Value="estudiante.FechaNacimiento"></InputDate>
                     <ValidationMessage For="(() => estudiante.FechaNacimiento)" />
+                </div>
+
+                @*Mensaje de error*@
+                <div>
+                    <label class="form-label"><strong>@Mensaje</strong></label>
                 </div>
             </div>
 
@@ -72,6 +75,7 @@
 
     public async Task Guardar()
     {
+        Mensaje = string.Empty;
         var existe = await estudianteService.Existe(estudiante.Nombres);
 
         if (existe)
