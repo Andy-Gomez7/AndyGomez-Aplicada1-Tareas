@@ -10,6 +10,7 @@ public class Libro
     public string? Titulo { get; set; }
     public string? Autor { get; set; }
     public int AnoPublicacion { get; set; }
+    public bool Disponible { get; set; }
 
     [InverseProperty("Libro")]
     public virtual ICollection<Prestamo> Prestamos { get; set; }= new List<Prestamo>();

@@ -8,7 +8,6 @@ public class Prestamo
     public int PrestamoId { get; set; }
     public DateOnly FechaPrestamo { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public DateOnly? FechaDevolucion { get; set; }
-    public bool Disponible { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un libro valido")]
     public int EstudianteId { get; set; }

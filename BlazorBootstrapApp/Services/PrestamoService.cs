@@ -24,6 +24,14 @@ public class PrestamoService(IDbContextFactory<Contexto> DbFactory) : IService<P
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
+        var libro = await contexto.Libros.FindAsync(prestamo.LibroId);
+        if (libro is null || !libro.Disponible)
+        {
+            return false;
+        }
+
+        libro.Disponible = false;
+
         contexto.Prestamos.Add(prestamo);
 
         return await contexto.SaveChangesAsync() > 0;
