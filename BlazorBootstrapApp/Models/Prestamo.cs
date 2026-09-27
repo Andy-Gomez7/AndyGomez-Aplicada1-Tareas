@@ -8,14 +8,19 @@ public class Prestamo
     public int PrestamoId { get; set; }
     public DateOnly FechaPrestamo { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public DateOnly? FechaDevolucion { get; set; }
+    public bool Disponible { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un libro valido")]
     public int EstudianteId { get; set; }
+
     [ForeignKey("EstudianteId")]
     [InverseProperty("Prestamo")]
-    public Estudiante estudiante { get; set; }
+    public virtual Estudiante estudiante { get; set; }
 
+    [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un libro valido")]
     public int LibroId { get; set; }
+
     [ForeignKey("LibroId")]
     [InverseProperty("Prestamo")]
-    public Libro libro { get; set; }
+    public virtual Libro libro { get; set; }
 }
