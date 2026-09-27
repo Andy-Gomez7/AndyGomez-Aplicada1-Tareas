@@ -3,12 +3,19 @@
 @using BlazorBootstrapApp.Models
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @inject PrestamoService prestamoService
+@inject LibroService libroService
+@inject EstudianteService estudianteService
 @inject NavigationManager navegacion
 @rendermode InteractiveServer
 
-@*HTML*@
 <PageTitle>Create</PageTitle>
-<EditForm Model="prestamo" OnValidSubmit="Guardar">
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <div class="alert alert-danger">@Mensaje</div>
+}
+
+<EditForm Model="Prestamo" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
 
     <div class="container">
@@ -17,13 +24,13 @@
                 <h5 class="card-title">Crear prestamo de libro</h5>
             </div>
 
-            <div class="card-body ">
-    
+            <div class="card-body">
+
                 @*Libro*@
                 <div class="mb-3">
                     <label class="form-label"><strong>Libro</strong></label>
                     <InputSelect class="form-control form-select" @bind-Value="Prestamo.LibroId">
-                        <option>Elija una opcion-</option>
+                        <option value="0">Elija una opción</option>
                         @foreach (var libro in ListaLibros)
                         {
                             <option value="@libro.LibroId">@libro.Titulo</option>
@@ -32,14 +39,14 @@
                     <ValidationMessage For="(() => Prestamo.LibroId)" />
                 </div>
 
-                @*Estdiante*@
+                @*Estudiante*@
                 <div class="mb-3">
                     <label class="form-label"><strong>Estudiante</strong></label>
                     <InputSelect class="form-control form-select" @bind-Value="Prestamo.EstudianteId">
-                        <option>Elija una opcion-</option>
+                        <option value="0">Elija una opción</option>
                         @foreach (var estudiante in ListaEstudiantes)
                         {
-                            <option value="@estudiante.EstudianteId">@estudiante.Nombre</option>
+                            <option value="@estudiante.EstudianteId">@estudiante.Nombres</option>
                         }
                     </InputSelect>
                     <ValidationMessage For="(() => Prestamo.EstudianteId)" />
@@ -47,11 +54,10 @@
 
                 @*FechaPrestamo*@
                 <div class="mb-3">
-                    <label class="form-label"><strong>FechaPrestamo</strong></label>
+                    <label class="form-label"><strong>Fecha de préstamo</strong></label>
                     <InputDate class="form-control" @bind-Value="Prestamo.FechaPrestamo" readonly></InputDate>
                     <ValidationMessage For="(() => Prestamo.FechaPrestamo)" />
                 </div>
-            </div>
 
                 @*FechaDevolucion*@
                 <div class="mb-3">
@@ -59,7 +65,8 @@
                     <InputDate class="form-control" @bind-Value="Prestamo.FechaDevolucion"></InputDate>
                     <ValidationMessage For="(() => Prestamo.FechaDevolucion)" />
                 </div>
-        </div>
+
+            </div>
 
             @*footer*@
             <div class="card-footer text-center mt-2">
@@ -71,25 +78,25 @@
 </EditForm>
 
 @code {
-    public Prestamo prestamo { get; set; } = new Prestamo();
+    public Prestamo Prestamo { get; set; } = new Prestamo();
     public string Mensaje { get; set; } = string.Empty;
     public List<Libro> ListaLibros { get; set; } = new List<Libro>();
     public List<Estudiante> ListaEstudiantes { get; set; } = new List<Estudiante>();
 
     protected override async Task OnInitializedAsync()
     {
-        ListaLibros = await ListaLibros.GetList(l => l.LibroId > 0);
-        ListaEstudiantes = await ListaEstudiantes.GetList(e => e.EstudianteId > 0);
+        ListaLibros = await libroService.GetList(l => l.Disponible);
+        ListaEstudiantes = await estudianteService.GetList(e => e.EstudianteId > 0);
     }
 
     public async Task Guardar()
     {
-        var creado = await prestamosService.Guardar(Prestamo);
+        var creado = await prestamoService.Guardar(Prestamo);
 
         if (creado)
         {
-            Mensaje = "prestamo guardado correctamente";
-            navigationManager.NavigateTo("/Prestamo/Index");
+            Mensaje = "Préstamo guardado correctamente";
+            navegacion.NavigateTo("/Prestamo/Index");
         }
         else
         {
