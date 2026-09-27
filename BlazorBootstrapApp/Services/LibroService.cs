@@ -2,10 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using BlazorBootstrapApp.Context;
 using BlazorBootstrapApp.Models;
 using System.Linq.Expressions;
+using Aplicada1.Core;
 
 namespace BlazorBootstrapApp.Services;
 
-public class LibroService(IDbContextFactory<Contexto> DbFactory)
+public class LibroService(IDbContextFactory<Contexto> DbFactory) : IService<Libro, int>
 {
     public async Task<bool> Guardar(Libro libro)
     {
@@ -59,7 +60,7 @@ public class LibroService(IDbContextFactory<Contexto> DbFactory)
             .ExecuteDeleteAsync() > 0;
     }
 
-    public async Task<List<Libro>> Listar(Expression<Func<Libro, bool>> criterio)
+    public async Task<List<Libro>> GetList(Expression<Func<Libro, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 

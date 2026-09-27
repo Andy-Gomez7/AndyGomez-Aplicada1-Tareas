@@ -72,18 +72,11 @@
 
     protected override async Task OnInitializedAsync(){
         estudiante = await estudianteService.Buscar(EstudianteId);
-        ListaEstudiantes = await estudianteService.Listar(E => E.EstudianteId > 0);
+        ListaEstudiantes = await estudianteService.GetList(E => E.EstudianteId > 0);
     }
 
     public async Task Modificar(){
         Mensaje = string.Empty;
-        var existe = await estudianteService.Existe(estudiante.Nombres);
-
-        if (existe)
-        {
-            Mensaje = "Ya existe un Estudiante con ese nombre";
-            return;
-        }
 
         var modificado = await estudianteService.Guardar(estudiante);
         if(modificado){

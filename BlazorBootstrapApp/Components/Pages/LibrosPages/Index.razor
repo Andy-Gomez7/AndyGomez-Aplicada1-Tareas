@@ -97,7 +97,7 @@
     public string ValorFiltro { get; set; } = string.Empty;
     
     protected override async Task OnInitializedAsync(){
-        ListaLibros = await libroservice.Listar(l => l.LibroId >0);
+        ListaLibros = await libroservice.GetList(l => l.LibroId >0);
     }
 
     private async Task Buscar(){
@@ -106,13 +106,13 @@
 
             if(Filtro == nameof(Libro.Titulo)){
 
-                ListaLibros = await libroservice.Listar(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+                ListaLibros = await libroservice.GetList(l => l.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
             }
         }
     }
 
     private async Task Restablecer(){
-        ListaLibros = await libroservice.Listar(l => l.LibroId > 0);
+        ListaLibros = await libroservice.GetList(l => l.LibroId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
     }

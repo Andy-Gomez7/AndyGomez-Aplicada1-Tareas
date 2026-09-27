@@ -4,8 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using BlazorBootstrapApp.Context;
 using BlazorBootstrapApp.Models;
 using System.Linq.Expressions;
+using Aplicada1.Core;
 
-public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
+public class EstudianteService(IDbContextFactory<Contexto> DbFactory) : IService<Estudiante, int>    
 {
     public async Task<bool> Guardar(Estudiante estudiante)
     {
@@ -58,7 +59,7 @@ public class EstudianteService(IDbContextFactory<Contexto> DbFactory)
         return await contexto.Estudiantes.AsNoTracking().Where(E => E.EstudianteId == estudianteId).ExecuteDeleteAsync() > 0;
     } 
 
-    public async Task<List<Estudiante>> Listar(Expression<Func<Estudiante, bool>> criterio)
+    public async Task<List<Estudiante>> GetList(Expression<Func<Estudiante, bool>> criterio)
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
