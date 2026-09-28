@@ -11,9 +11,14 @@ public class LibroService(IDbContextFactory<Contexto> DbFactory) : IService<Libr
     public async Task<bool> Guardar(Libro libro)
     {
         if (libro.LibroId == 0)
+        {
             return await Insertar(libro);
+        }
         else
-        return await Modificar(libro);
+        {
+            return await Modificar(libro);    
+        }
+        
     }
 
     public async Task<bool> Insertar(Libro libro)

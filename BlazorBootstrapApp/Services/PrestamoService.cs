@@ -50,7 +50,7 @@ public class PrestamoService(IDbContextFactory<Contexto> DbFactory) : IService<P
     {
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
-        return await contexto.Prestamos.Include(E => E.estudiante).Include(L => L.libro).FirstOrDefaultAsync(E => E.PrestamoId == prestamoId);
+        return await contexto.Prestamos.Include(E => E.Estudiante).Include(L => L.Libro).FirstOrDefaultAsync(E => E.PrestamoId == prestamoId);
     }
 
     public async Task<bool> Existe(int PrestamoId)
@@ -72,8 +72,8 @@ public class PrestamoService(IDbContextFactory<Contexto> DbFactory) : IService<P
         await using var contexto = await DbFactory.CreateDbContextAsync();
 
         return await contexto.Prestamos
-        .Include(L => L.libro)
-        .Include(E => E.estudiante)
+        .Include(L => L.Libro)
+        .Include(E => E.Estudiante)
         .Where(criterio)
         .AsNoTracking()
         .ToListAsync();

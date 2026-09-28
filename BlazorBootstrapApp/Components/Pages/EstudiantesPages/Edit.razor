@@ -56,9 +56,30 @@
         <div class="card-footer text-center mt-2">
             <a href="/Estudiante/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span>Volver</a>
             <button type="submit" class="btn btn-primary bi bi-floppy">Modificar</button>
-            <button type="button" class="btn btn-primary bi bi-trash" @onclick="Eliminar">Eliminar</button>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#EliminarEstudiante">Eliminar</button>
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="EliminarEstudiante" tabindex="-1" aria-labelledby="EliminarEstudianteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="EliminarEstudianteLabel">¡Alerta!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro de borrar esta entidad?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+        <button type="button" class="btn btn-danger" @onclick="Eliminar">
+          <span class="bi bi-trash"></span> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 </EditForm>

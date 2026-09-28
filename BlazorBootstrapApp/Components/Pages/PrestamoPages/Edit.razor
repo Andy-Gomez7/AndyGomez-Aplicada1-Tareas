@@ -1,0 +1,135 @@
+@page "/Prestamo/Edit/{PrestamoId:int}"
+@using BlazorBootstrapApp.Services
+@using BlazorBootstrapApp.Models
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject PrestamoService prestamoService
+@inject LibroService libroService
+@inject EstudianteService estudianteService
+@inject NavigationManager navegacion
+@rendermode InteractiveServer
+
+@*HTML*@
+<PageTitle>Modificar</PageTitle>
+<EditForm Model="Prestamo" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h5 class="card-title">Modificar Prestamo</h5>
+            </div>
+
+            <div class="card-body">
+                @*Estudiante*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Estudiante</strong></label>
+                        <InputSelect class="form-control" @bind-Value="Prestamo.EstudianteId">
+                            <option value="" selected disabled>Elija una opcion</option>
+                            @foreach (var estudiante in ListaEstudiante)
+                            {
+                                <option value="@estudiante.EstudianteId">@estudiante.Nombres</option>
+                            }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Prestamo.EstudianteId)" />
+                </div>
+                @*Libro*@
+                <div class="mb-3">
+                    <label class="form-label"><strong>Libro</strong></label>
+                        <InputSelect class="form-control" @bind-Value="Prestamo.LibroId">
+                            <option value="" selected disabled>Elija una opcion</option>
+                            @foreach (var libro in ListaLibro)
+                            {
+                                <option value="@libro.LibroId">@libro.Titulo</option>
+                            }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Prestamo.LibroId)" />
+                </div>
+            </div>
+
+            @*footer*@
+            <div class="card-footer text-center mt-2">
+                <a href="/Prestamo/Index" class="btn btn-secondary">
+                    <span class="bi bi-arrow-left"></span> Volver
+                </a>
+                <button type="submit" class="btn btn-primary">
+                    <span class="bi bi-floppy"></span> Modificar
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#EliminarPrestamo">
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal -->
+<div class="modal fade" id="EliminarPrestamo" tabindex="-1" aria-labelledby="EliminarPrestamoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="EliminarPrestamoLabel">¡Alerta!</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro de borrar esta entidad?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Volver</button>
+        <button type="button" class="btn btn-danger" @onclick="Eliminar">
+          <span class="bi bi-trash"></span> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int PrestamoId { get; set; }
+    public Prestamo Prestamo { get; set; } = new Prestamo();
+    public string Mensaje { get; set; } = string.Empty;
+    public List<Libro> ListaLibro { get; set; } = new List<Libro>();
+    public List<Estudiante> ListaEstudiante { get; set; } = new List<Estudiante>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Prestamo = await prestamoService.Buscar(PrestamoId);
+        ListaLibro = await libroService.GetList(L => L.LibroId > 0);
+        ListaEstudiante = await estudianteService.GetList(E => E.EstudianteId > 0);
+    }
+
+    public async Task Modificar()
+    {
+        var creado = await prestamoService.Guardar(Prestamo);
+
+        if (creado)
+        {
+            Mensaje = "Se ha modificado correctamente";
+        }
+        else
+        {
+            Mensaje = "No se ha podido modificar correctamente";
+        }
+    }
+
+    private async Task Eliminar(){
+        var libro = await libroService.Buscar(Prestamo.LibroId);
+
+        var eliminado = await prestamoService.Eliminar(Prestamo.PrestamoId);
+
+        if (eliminado)
+        {
+            if (libro != null)
+            {
+                libro.Disponible = true;
+                await libroService.Modificar(libro);
+            }
+            navegacion.NavigateTo("/Prestamo/Index");
+        }
+        else
+        {
+            Mensaje = "No se ha podido eliminar correctamente";
+        }
+    }
+}

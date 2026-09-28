@@ -32,6 +32,10 @@
     margin-right: 0.75rem;
     top: -1px;
     background-size: cover;
+    font-size: 1.1rem;
+    line-height: 1.25rem;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .bi-house-door-fill-nav-menu {

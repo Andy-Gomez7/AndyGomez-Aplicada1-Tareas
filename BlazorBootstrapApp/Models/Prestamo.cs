@@ -13,13 +13,13 @@ public class Prestamo
     public int EstudianteId { get; set; }
 
     [ForeignKey("EstudianteId")]
-    [InverseProperty("Prestamo")]
-    public virtual Estudiante estudiante { get; set; }
+    [InverseProperty("Prestamos")]
+    public virtual Estudiante Estudiante { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Debe seleccionar un libro valido")]
     public int LibroId { get; set; }
 
     [ForeignKey("LibroId")]
-    [InverseProperty("Prestamo")]
-    public virtual Libro libro { get; set; }
+    [InverseProperty("Prestamos")]
+    public virtual Libro Libro { get; set; }
 }
