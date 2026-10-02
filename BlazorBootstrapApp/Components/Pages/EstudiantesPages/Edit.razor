@@ -1,0 +1,106 @@
+@page "/Estudiante/Edit/{EstudianteId:int}"
+@using BlazorBootstrapApp.Services
+@using BlazorBootstrapApp.Models
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject EstudianteService estudianteService
+@inject NavigationManager navegacion
+@rendermode InteractiveServer
+
+<PageTitle>Modificar Estudiante</PageTitle>
+<EditForm Model="estudiante" OnValidSubmit="Modificar">
+    <DataAnnotationsValidator/>
+
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header">
+            <h5 class="card-title">Modificar Estudiante</h5>
+        </div>
+
+        <div class="card-body">
+
+            @*Nombres*@
+            <div class="mb-3">
+                <label class="form-label"><strong>Nombres</strong></label>
+                <InputText class="form-control" @bind-Value="estudiante.Nombres"></InputText>
+                <ValidationMessage For="(() => estudiante.Nombres)" />
+            </div>
+
+            @*Email*@
+            <div class="mb-3">
+                <label class="form-label"><strong>Email</strong></label>
+                <InputText class="form-control" @bind-Value="estudiante.Email"></InputText>
+                <ValidationMessage For="(() => estudiante.Email)" />
+            </div>
+
+            @*Direccion*@
+            <div class="mb-3">
+                <label class="form-label"><strong>Direccion</strong></label>
+                <InputText class="form-control" @bind-Value="estudiante.Direccion"></InputText>
+                <ValidationMessage For="(() => estudiante.Direccion)" />
+            </div>
+
+            @*Fecha de nacimiento*@
+            <div class="mb-3">
+                <label class="form-label"><strong>FechaNacimiento</strong></label>
+                <InputDate class="form-control" @bind-Value="estudiante.FechaNacimiento"></InputDate>
+                <ValidationMessage For="(() => estudiante.FechaNacimiento)" />
+            </div>
+
+            @*Mensaje de error*@
+            <div>
+                <label class="form-label"><strong>@Mensaje</strong></label>
+            </div>
+        </div>
+
+        @*footer*@
+        <div class="card-footer text-center mt-2">
+            <a href="/Estudiante/Index" class="btn btn-secondary"> <span class="bi bi-arrow-left"></span>Volver</a>
+            <button type="submit" class="btn btn-primary bi bi-floppy">Modificar</button>
+            <button type="button" class="btn btn-primary bi bi-trash" @onclick="Eliminar">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+</EditForm>
+
+@code{
+    [Parameter]
+    public int EstudianteId { get; set; }
+    public Estudiante estudiante { get; set; } = new Estudiante();
+    public List<Estudiante> ListaEstudiantes { get; set; } = new List<Estudiante>();
+    public string Mensaje { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync(){
+        estudiante = await estudianteService.Buscar(EstudianteId);
+        ListaEstudiantes = await estudianteService.Listar(E => E.EstudianteId > 0);
+    }
+
+    public async Task Modificar(){
+        Mensaje = string.Empty;
+        var existe = await estudianteService.Existe(estudiante.Nombres);
+
+        if (existe)
+        {
+            Mensaje = "Ya existe un Estudiante con ese nombre";
+            return;
+        }
+
+        var modificado = await estudianteService.Guardar(estudiante);
+        if(modificado){
+            navegacion.NavigateTo("/Estudiante/Index");
+        }
+        else{
+            Mensaje = "No se pudo modificar";
+        }
+    }
+
+    public async Task Eliminar(){
+        var eliminado = await estudianteService.Eliminar(estudiante.EstudianteId);
+        if(eliminado){
+            navegacion.NavigateTo("/Estudiante/Index");
+        }
+        else{
+            Mensaje = "No se pudo eliminar";
+        }
+    }
+}

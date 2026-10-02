@@ -7,9 +7,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 var ConStr = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlite(ConStr));
+builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
 
 builder.Services.AddScoped<LibroService>();
+builder.Services.AddScoped<EstudianteService>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
