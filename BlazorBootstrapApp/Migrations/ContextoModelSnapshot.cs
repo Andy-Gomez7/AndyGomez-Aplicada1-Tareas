@@ -64,12 +64,73 @@ namespace BlazorBootstrapApp.Migrations
                     b.Property<string>("Autor")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("Disponible")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Titulo")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LibroId");
 
                     b.ToTable("Libros");
+                });
+
+            modelBuilder.Entity("BlazorBootstrapApp.Models.Prestamo", b =>
+                {
+                    b.Property<int>("PrestamoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PrestamoId"));
+
+                    b.Property<int>("EstudianteId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("FechaDevolucion")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("FechaPrestamo")
+                        .HasColumnType("date");
+
+                    b.Property<int>("LibroId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PrestamoId");
+
+                    b.HasIndex("EstudianteId");
+
+                    b.HasIndex("LibroId");
+
+                    b.ToTable("Prestamos");
+                });
+
+            modelBuilder.Entity("BlazorBootstrapApp.Models.Prestamo", b =>
+                {
+                    b.HasOne("BlazorBootstrapApp.Models.Estudiante", "Estudiante")
+                        .WithMany("Prestamos")
+                        .HasForeignKey("EstudianteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BlazorBootstrapApp.Models.Libro", "Libro")
+                        .WithMany("Prestamos")
+                        .HasForeignKey("LibroId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Estudiante");
+
+                    b.Navigation("Libro");
+                });
+
+            modelBuilder.Entity("BlazorBootstrapApp.Models.Estudiante", b =>
+                {
+                    b.Navigation("Prestamos");
+                });
+
+            modelBuilder.Entity("BlazorBootstrapApp.Models.Libro", b =>
+                {
+                    b.Navigation("Prestamos");
                 });
 #pragma warning restore 612, 618
         }

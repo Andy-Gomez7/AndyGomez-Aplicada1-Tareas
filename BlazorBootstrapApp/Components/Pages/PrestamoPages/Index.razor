@@ -1,0 +1,110 @@
+@page "/Prestamo/Index"
+@using BlazorBootstrapApp.Services
+@using BlazorBootstrapApp.Models
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@inject PrestamoService prestamoService
+@inject NavigationManager navegacion
+@rendermode InteractiveServer
+
+<PageTitle>Indice de prestamos</PageTitle>
+<div class="container">
+    <div class="card shadow-lg">
+        <div class="card-header d-flex justify-content-between align-center mb-4">
+            <h5 class="card-title mb-0">Indice Prestamos</h5>
+            <a href="/Prestamo/Create" class="btn btn-primary"> <span class="bi bi-plus-square mt-3"></span> Crear prestamo</a>
+        </div>
+
+        <div class="card-body">
+
+            @*labels*@
+            <div class="row">
+
+                @*Filtrar por*@
+                <div class="col-3">
+                    <label class="col-form-label"><strong>Filtrar por</strong></label>
+                </div>
+
+                @*ValorFiltro*@
+                <div class="col-4">
+                    <label class="col-form-label"><strong>Busqueda</strong></label>
+                </div>
+            </div>
+
+            @*Inputs y botones*@
+            <div class="row align-items-center">
+                @*filtro*@
+                <div class="col-3">
+                    <InputSelect class="form-select" @bind-Value="Filtro">
+                        <option value="" selected disabled>Seleccione</option>
+                        <option value="estudiante">estudiante</option>
+                        <option value="libro">libro</option>
+                    </InputSelect>
+                </div>
+
+                @*Busqueda*@
+                <div class="col-4">
+                    <div class="input-group">
+                        <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar">Buscar</button>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="mt-3">
+                <QuickGrid Items="@ListaPrestamos.AsQueryable()">
+                    <PropertyColumn Property="@(p => p.PrestamoId)" Title ="PrestamoId" Sortable="true"/>
+                    <PropertyColumn Property="@(p => p.Libro.Titulo)" Title ="libro" Sortable="true"/>
+                    <PropertyColumn Property="@(p => p.Estudiante.Nombres)" Title ="estudiante" Sortable="true"/>
+                    <PropertyColumn Property="@(p => p.FechaPrestamo)" Title ="FechaPrestamo" Sortable="true"/>
+                    <PropertyColumn Property="@(p => p.FechaDevolucion)" Title ="FechaDevolucion" Sortable="true"/>
+
+                    <TemplateColumn>
+                        <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                    </TemplateColumn>
+                </QuickGrid>
+            </div>
+            
+            
+        </div>
+        <div class="card-footer d-flex justify-content-between align-center">
+            <label>Cantidad:  @ListaPrestamos.Count()</label> 
+        </div>
+    </div>
+</div>
+
+@code {
+
+    public List<Prestamo> ListaPrestamos { get; set; } = new List<Prestamo>();
+
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaPrestamos = await prestamoService.GetList(p => p.PrestamoId > 0);
+    }
+
+    private async Task Buscar()
+    {
+        if (ValorFiltro.Trim() != "")
+        {
+            if (Filtro == "estudiante")
+            {
+                ListaPrestamos = await prestamoService.GetList(p => p.Estudiante.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+            else if (Filtro == "libro")
+            {
+                ListaPrestamos = await prestamoService.GetList(p => p.Libro.Titulo.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+        }
+        else
+            ListaPrestamos = await prestamoService.GetList(p => p.PrestamoId > 0);
+    }
+    private async Task Restablecer()
+    {
+        ListaPrestamos = await prestamoService.GetList(e => e.PrestamoId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
+}

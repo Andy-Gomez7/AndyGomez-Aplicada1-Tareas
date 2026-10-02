@@ -40,12 +40,12 @@
                 <div class="col-4">
                     <div class="input-group">
                         <input class="form-control" @bind="ValorFiltro" placeholder="Buscar" />
-                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar"></button>
+                        <button type="button" class="btn btn-outline-primary bi bi-search" @onclick="Buscar">Buscar</button>
                     </div>
                 </div>
 
                 <div class="col-2">
-                    <button type="button" class="btn btn-outline-primary bi bi-arrow-counterclockwise" @onclick="Restablecer"></button>
+                    <button type="button" class="btn btn-outline-primary bi bi-arrow-counterclockwise" @onclick="Restablecer">Reestablecer</button>
                 </div>
             </div>
 
@@ -58,7 +58,6 @@
                         <th>Dirección</th>
                         <th>Email</th>
                         <th>Fecha de nacimiento</th>
-                        <th class="text-center">Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,7 +91,7 @@
     public string ValorFiltro { get; set; } = string.Empty;
     
     protected override async Task OnInitializedAsync(){
-        ListaEstudiantes = await estudiantesService.Listar(E => E.EstudianteId >0);
+        ListaEstudiantes = await estudiantesService.GetList(E => E.EstudianteId >0);
     }
 
     private async Task Buscar(){
@@ -101,13 +100,13 @@
 
             if(Filtro == nameof(Estudiante.Nombres)){
 
-                ListaEstudiantes = await estudiantesService.Listar(E => E.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
+                ListaEstudiantes = await estudiantesService.GetList(E => E.Nombres.ToLower().Contains(ValorFiltro.ToLower()));
             }
         }
     }
 
     private async Task Restablecer(){
-        ListaEstudiantes = await estudiantesService.Listar(E => E.EstudianteId > 0);
+        ListaEstudiantes = await estudiantesService.GetList(E => E.EstudianteId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
     }

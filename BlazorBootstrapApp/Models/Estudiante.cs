@@ -1,6 +1,7 @@
 namespace BlazorBootstrapApp.Models;
 
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Estudiante
 {
@@ -14,4 +15,7 @@ public class Estudiante
     public string? Email { get; set; }
     [Required (ErrorMessage = "El campo fecha de nacimiento es obligatorio")]
     public DateOnly FechaNacimiento { get; set; }
+
+    [InverseProperty("Estudiante")]
+    public virtual ICollection<Prestamo> Prestamos { get; set; } = new List<Prestamo>();
 }

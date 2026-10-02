@@ -70,7 +70,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ListaEstudiantes = await estudianteService.Listar(E => E.EstudianteId > 0);
+        ListaEstudiantes = await estudianteService.GetList(E => E.EstudianteId > 0);
     }
 
     public async Task Guardar()
