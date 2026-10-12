@@ -57,7 +57,6 @@
                     <PropertyColumn Property="@(p => p.Libro.Titulo)" Title ="libro" Sortable="true"/>
                     <PropertyColumn Property="@(p => p.Estudiante.Nombres)" Title ="estudiante" Sortable="true"/>
                     <PropertyColumn Property="@(p => p.FechaPrestamo)" Title ="FechaPrestamo" Sortable="true"/>
-                    <PropertyColumn Property="@(p => p.FechaDevolucion)" Title ="FechaDevolucion" Sortable="true"/>
 
                     <TemplateColumn>
                         <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square"></a>

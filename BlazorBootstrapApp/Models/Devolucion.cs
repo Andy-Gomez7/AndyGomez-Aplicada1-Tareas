@@ -10,7 +10,4 @@ public class Devolucion
     [ForeignKey("PrestamoId")]
     public Prestamo Prestamo { get; set; } = null!;
     public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
-
-    
-
 }
