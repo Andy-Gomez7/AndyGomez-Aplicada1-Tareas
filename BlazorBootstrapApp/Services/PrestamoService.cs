@@ -74,6 +74,7 @@ public class PrestamoService(IDbContextFactory<Contexto> DbFactory) : IService<P
         return await contexto.Prestamos
         .Include(L => L.Libro)
         .Include(E => E.Estudiante)
+        .Include(D => D.Devolucion)
         .Where(criterio)
         .AsNoTracking()
         .ToListAsync();

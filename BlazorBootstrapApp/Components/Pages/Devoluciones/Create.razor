@@ -1,4 +1,4 @@
-@page "/Devolucion/Create"
+@page "/Devolucion/Create/{PrestamoId:int}"
 @using BlazorBootstrapApp.Services
 @using BlazorBootstrapApp.Models
 @inject DevolucionService devolucionService
@@ -46,6 +46,8 @@
 </EditForm>
 
 @code {
+    [Parameter]
+    public int PrestamoId { get; set; }
     public Devolucion Devolucion { get; set; } = new();
     public List<Prestamo> Pendientes { get; set; } = new();
     public string Mensaje { get; set; } = string.Empty;
@@ -53,12 +55,13 @@
     protected override async Task OnInitializedAsync()
     {
         Pendientes = await prestamoService.GetList(p => p.Devolucion == null);
+            Devolucion.PrestamoId = PrestamoId;
     }
 
     public async Task Guardar()
     {
         if (await devolucionService.Guardar(Devolucion))
-            navegacion.NavigateTo("/Libro/Promedio");
+            navegacion.NavigateTo("/Prestamo/Index");
         else
             Mensaje = "No se pudo registrar la devolución";
     }

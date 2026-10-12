@@ -64,8 +64,15 @@
                     </TemplateColumn>
 
                     <TemplateColumn>
-                        <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square">Modificar</a>
                     </TemplateColumn>
+
+                    <TemplateColumn>
+                        @if(context.Devolucion == null){
+                            <a href="@($"/Devolucion/Create/{context.PrestamoId}")" class="btn btn-outline-success bi bi-box-arrow-in-down"> Devolver</a>   
+                        }
+                    </TemplateColumn>
+
                 </QuickGrid>
             </div>
             
@@ -116,12 +123,12 @@
     }
 
     private string Promedio(int libroId)
-{
-    var devoluciones = ListaDevoluciones.Where(d => d.Prestamo.LibroId == libroId).ToList();
+    {
+        var devoluciones = ListaDevoluciones.Where(d => d.Prestamo.LibroId == libroId).ToList();
 
-    if (devoluciones.Count == 0)
-        return "-";
+        if (devoluciones.Count == 0)
+            return "-";
 
-    return devoluciones.Average(d => d.Fecha.DayNumber - d.Prestamo.FechaPrestamo.DayNumber).ToString("N1");
-}
+        return devoluciones.Average(d => d.Fecha.DayNumber - d.Prestamo.FechaPrestamo.DayNumber).ToString("N1");
+    }
 }
