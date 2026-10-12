@@ -1,0 +1,65 @@
+@page "/Devolucion/Create"
+@using BlazorBootstrapApp.Services
+@using BlazorBootstrapApp.Models
+@inject DevolucionService devolucionService
+@inject PrestamoService prestamoService
+@inject NavigationManager navegacion
+@rendermode InteractiveServer
+
+<PageTitle>Devolución de libro</PageTitle>
+
+@if (!string.IsNullOrEmpty(Mensaje))
+{
+    <div class="alert alert-danger">@Mensaje</div>
+}
+
+<EditForm Model="Devolucion" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator />
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header text-center">
+                <h5 class="card-title">Devolución de libro</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Préstamo pendiente</strong></label>
+                    <InputSelect class="form-select" @bind-Value="Devolucion.PrestamoId">
+                        <option value="0">Elija una opción</option>
+                        @foreach (var p in Pendientes)
+                        {
+                            <option value="@p.PrestamoId">@p.Libro.Titulo - @p.Estudiante.Nombres</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="(() => Devolucion.PrestamoId)" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><strong>Fecha de devolución</strong></label>
+                    <InputDate class="form-control" @bind-Value="Devolucion.Fecha" />
+                </div>
+            </div>
+            <div class="card-footer text-center mt-2">
+                <a href="/Prestamo/Index" class="btn btn-secondary"><span class="bi bi-arrow-left"></span> Volver</a>
+                <button type="submit" class="btn btn-primary bi bi-floppy"> Devolver</button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public Devolucion Devolucion { get; set; } = new();
+    public List<Prestamo> Pendientes { get; set; } = new();
+    public string Mensaje { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Pendientes = await prestamoService.GetList(p => p.Devolucion == null);
+    }
+
+    public async Task Guardar()
+    {
+        if (await devolucionService.Guardar(Devolucion))
+            navegacion.NavigateTo("/Libro/Promedio");
+        else
+            Mensaje = "No se pudo registrar la devolución";
+    }
+}
