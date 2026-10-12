@@ -4,6 +4,7 @@
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @inject PrestamoService prestamoService
 @inject NavigationManager navegacion
+@inject DevolucionService devolucionService
 @rendermode InteractiveServer
 
 <PageTitle>Indice de prestamos</PageTitle>
@@ -57,11 +58,21 @@
                     <PropertyColumn Property="@(p => p.Libro.Titulo)" Title ="libro" Sortable="true"/>
                     <PropertyColumn Property="@(p => p.Estudiante.Nombres)" Title ="estudiante" Sortable="true"/>
                     <PropertyColumn Property="@(p => p.FechaPrestamo)" Title ="FechaPrestamo" Sortable="true"/>
-                    <PropertyColumn Property="@(p => p.FechaDevolucion)" Title ="FechaDevolucion" Sortable="true"/>
+
+                    <TemplateColumn Title="Promedio del libro (días)">
+                        @Promedio(context.LibroId)
+                    </TemplateColumn>
 
                     <TemplateColumn>
-                        <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square"></a>
+                        <a href="@($"/Prestamo/Edit/{context.PrestamoId}")" class="btn btn-outline-primary bi bi-pencil-square">Modificar</a>
                     </TemplateColumn>
+
+                    <TemplateColumn>
+                        @if(context.Devolucion == null){
+                            <a href="@($"/Devolucion/Create/{context.PrestamoId}")" class="btn btn-outline-success bi bi-box-arrow-in-down"> Devolver</a>   
+                        }
+                    </TemplateColumn>
+
                 </QuickGrid>
             </div>
             
@@ -76,6 +87,7 @@
 @code {
 
     public List<Prestamo> ListaPrestamos { get; set; } = new List<Prestamo>();
+    public List<Devolucion> ListaDevoluciones { get; set; } = new List<Devolucion>();
 
     public string Filtro { get; set; } = string.Empty;
     public string ValorFiltro { get; set; } = string.Empty;
@@ -83,6 +95,7 @@
     protected override async Task OnInitializedAsync()
     {
         ListaPrestamos = await prestamoService.GetList(p => p.PrestamoId > 0);
+        ListaDevoluciones = await devolucionService.GetList(d => d.DevolucionId > 0);
     }
 
     private async Task Buscar()
@@ -104,7 +117,18 @@
     private async Task Restablecer()
     {
         ListaPrestamos = await prestamoService.GetList(e => e.PrestamoId > 0);
+        ListaDevoluciones = await devolucionService.GetList(d => d.DevolucionId > 0);
         Filtro = string.Empty;
         ValorFiltro = string.Empty;
+    }
+
+    private string Promedio(int libroId)
+    {
+        var devoluciones = ListaDevoluciones.Where(d => d.Prestamo.LibroId == libroId).ToList();
+
+        if (devoluciones.Count == 0)
+            return "-";
+
+        return devoluciones.Average(d => d.Fecha.DayNumber - d.Prestamo.FechaPrestamo.DayNumber).ToString("N1");
     }
 }

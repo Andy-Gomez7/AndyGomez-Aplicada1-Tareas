@@ -11,6 +11,7 @@ public class Libro
     public string? Autor { get; set; }
     public int AnoPublicacion { get; set; }
     public bool Disponible { get; set; } = true;
+    public int CantDisponible { get; set; }
 
     [InverseProperty("Libro")]
     public virtual ICollection<Prestamo> Prestamos { get; set; }= new List<Prestamo>();
